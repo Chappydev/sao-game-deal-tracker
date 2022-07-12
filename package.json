@@ -1,0 +1,22 @@
+{
+  "name": "sao-game-deal-tracker",
+  "version": "1.0.0",
+  "description": "Tracks deals on games from the Sword Art Online franchise",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Chappydev/sao-game-deal-tracker.git"
+  },
+  "author": "Daniel Chapman",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Chappydev/sao-game-deal-tracker/issues"
+  },
+  "homepage": "https://github.com/Chappydev/sao-game-deal-tracker#readme",
+  "devDependencies": {
+    "sass": "^1.53.0"
+  }
+}
