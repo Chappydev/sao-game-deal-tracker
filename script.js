@@ -5,25 +5,29 @@ testDiv.textContent = "Test";
 
 
 async function getGameList() {
-  // setting options for the request
-  const testReqOptions = {
-    method: 'GET',
-    redirect: 'follow'
-  }; 
+  try {
+    // setting options for the request
+    const testReqOptions = {
+      method: 'GET',
+      redirect: 'follow'
+    }; 
 
-  // making request and saving the response in the response object
-  const response = await fetch(
-    'https://www.cheapshark.com/api/1.0/games?title=swordartonline&exact=0',
-    testReqOptions
-  ); 
+    // making request and saving the response in the response object
+    const response = await fetch(
+      'https://www.cheapshark.com/api/1.0/games?title=swordartonline&exact=0',
+      testReqOptions
+    ); 
 
-  if (!response.ok) {
-    throw new Error(`HTTP error: ${response.status}`);
+    if (!response.ok) {
+      throw new Error(`HTTP error: ${response.status}`);
+    }
+
+    // Extracting data from response object as JSON
+    const data = await response.json(); 
+    return data;
+  } catch (err) {
+    console.error(err);
   }
-
-  // Extracting data from response object as JSON
-  const data = await response.json(); 
-  return data;
 }
 
 const reqButton = document.createElement("button");
@@ -45,9 +49,6 @@ reqButton.addEventListener('click', e => {
       console.log(filteredData);
 
       createSearchOptions(filteredData);
-    })
-    .catch(err => {
-      console.error(err.message);
     })
 });
 body.appendChild(reqButton);
