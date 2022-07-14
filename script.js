@@ -6,7 +6,7 @@ let filteredListData = [];
 async function getGameList() {
   try {
     // setting options for the request
-    const testReqOptions = {
+    const gameListOptions = {
       method: 'GET',
       redirect: 'follow'
     }; 
@@ -14,7 +14,7 @@ async function getGameList() {
     // making request and saving the response in the response object
     const response = await fetch(
       'https://www.cheapshark.com/api/1.0/games?title=swordartonline&exact=0',
-      testReqOptions
+      gameListOptions
     ); 
 
     if (!response.ok) {
@@ -22,8 +22,34 @@ async function getGameList() {
     }
 
     // Extracting data from response object as JSON
-    const data = await response.json(); 
-    return data;
+    const listData = await response.json(); 
+    return listData;
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+async function getGameInfo(id) {
+  try {
+    // setting options for the request
+    const gameInfoOptions = {
+      method: 'GET',
+      redirect: 'follow'
+    }; 
+
+    // making request and saving the response in response object
+    const response = await fetch(
+      `https://www.cheapshark.com/api/1.0/games?id=${id}`,
+      gameInfoOptions
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error: ${response.status}`);
+    }
+
+    // Extracting data from response object as JSON
+    const gameData = await response.json();
+    return gameData;
   } catch (err) {
     console.error(err);
   }
@@ -31,10 +57,10 @@ async function getGameList() {
 
 document.addEventListener('DOMContentLoaded', e => {
   getGameList() // let's do this and the filtering on page load
-    .then(data => {
-      gameList = data;
+    .then(listData => {
+      gameList = listData;
       console.log("This is gameList: " + gameList);
-      const filteredListData = data
+      const filteredListData = listData
         .map(({ thumb, external, cheapest }) => {
           return {
             thumb: thumb,
@@ -48,47 +74,6 @@ document.addEventListener('DOMContentLoaded', e => {
       paintGameList(gameList);
     })
 });
-
-function createSearchOptions(data) {
-  const searchContainer = document.createElement("div");
-  searchContainer.classList.add("container");
-  searchContainer.style.display = "flex";
-  searchContainer.style.flexDirection = "column";
-  const [innerDiv0, innerDiv1, innerDiv2] = 
-    [
-      document.createElement("div"), 
-      document.createElement("div"), 
-      document.createElement("div")
-    ];
-  const innerDivs = [innerDiv0, innerDiv1, innerDiv2];
-  innerDivs.forEach((div, ind) => {
-    div.classList.add("inner-search");
-    div.style.display = "flex";
-    div.style.justifyContent = "space-between";
-    div.style.alignItems = "center";
-    const [innerImg, innerTitle, innerCheapest] = [
-      document.createElement("img"),
-      document.createElement("div"),
-      document.createElement("div")
-    ];
-    innerImg.style.maxHeight = "50px";
-    innerImg.style.width = "auto";
-    innerImg.setAttribute("src", `${data[ind].thumb}`);
-
-    innerTitle.textContent = data[ind].title;
-    
-    innerCheapest.textContent = data[ind].cheapest;
-
-    div.appendChild(innerImg);
-    div.appendChild(innerTitle);
-    div.appendChild(innerCheapest);
-  });
-  searchContainer.appendChild(innerDiv0);
-  searchContainer.appendChild(innerDiv1);
-  searchContainer.appendChild(innerDiv2);
-  console.log(searchContainer);
-  body.appendChild(searchContainer);
-}
 
 function paintGameList(games) {
   // create grid container
@@ -108,6 +93,18 @@ function paintGameList(games) {
     anchorWrap.setAttribute("href", "#");
     gameDiv.classList.add("game-div");
     imgDiv.classList.add("blur", "game-img");
+
+    // query for game deals on click
+    anchorWrap.addEventListener('click', e => {
+      getGameInfo(gameObj.gameID)
+        .then(gameData => {
+          console.log("This is gameData " + gameData);
+          const testDiv = document.createElement('div');
+          testDiv.textContent = JSON.stringify(gameData);
+          testDiv.style.color = "white";
+          body.appendChild(testDiv);
+        })
+    }); 
 
     // set image as background
     if (gameObj.thumb !== "") {
