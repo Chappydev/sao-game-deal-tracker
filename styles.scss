@@ -1,5 +1,6 @@
 $blur: 5px;
 $gap: 1em;
+$b-radius: 6px;
 
 *, *::after, *::before {
   box-sizing: border-box;
@@ -28,9 +29,11 @@ a {
 }
 
 .anchor-wrap {
+  border-radius: $b-radius;
   position: relative;
   display: block;
   overflow: hidden;
+
   .game-img {
     position: absolute;
     top: 0;
@@ -54,8 +57,10 @@ a {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    h2 {
-      text-align: center;
+    text-align: center;
+    text-shadow: 0 0 8px rgba(250 250 250 / 0.8);
+    &:hover {
+      box-shadow: inset 0 0 20px rgba(250 250 250 / 0.6);
     }
   }
 }

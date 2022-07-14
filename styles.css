@@ -23,6 +23,7 @@ a {
 }
 
 .anchor-wrap {
+  border-radius: 6px;
   position: relative;
   display: block;
   overflow: hidden;
@@ -49,9 +50,11 @@ a {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-}
-.anchor-wrap .game-div h2 {
   text-align: center;
+  text-shadow: 0 0 8px rgba(250, 250, 250, 0.8);
+}
+.anchor-wrap .game-div:hover {
+  box-shadow: inset 0 0 20px rgba(250, 250, 250, 0.6);
 }
 
 .grid {
