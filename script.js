@@ -1,7 +1,6 @@
 const body = document.querySelector("body");
-const testDiv = document.querySelector("#test");
-testDiv.textContent = "Test";
-
+let gameList = [];
+let filteredListData = [];
 
 
 async function getGameList() {
@@ -30,14 +29,12 @@ async function getGameList() {
   }
 }
 
-const reqButton = document.createElement("button");
-reqButton.textContent = "Get Data";
-reqButton.addEventListener('click', e => {
-  getGameList()
+document.addEventListener('DOMContentLoaded', e => {
+  getGameList() // let's do this and the filtering on page load
     .then(data => {
-      console.log(data);
-      const filteredData = data
-        .slice(0, 3)
+      gameList = data;
+      console.log("This is gameList: " + gameList);
+      const filteredListData = data
         .map(({ thumb, external, cheapest }) => {
           return {
             thumb: thumb,
@@ -46,12 +43,11 @@ reqButton.addEventListener('click', e => {
           };
       });
       
-      console.log(filteredData);
+      console.log("This is filteredListData: " + filteredListData);
 
-      createSearchOptions(filteredData);
+      paintGameList(gameList);
     })
 });
-body.appendChild(reqButton);
 
 function createSearchOptions(data) {
   const searchContainer = document.createElement("div");
@@ -92,4 +88,51 @@ function createSearchOptions(data) {
   searchContainer.appendChild(innerDiv2);
   console.log(searchContainer);
   body.appendChild(searchContainer);
+}
+
+function paintGameList(games) {
+  // create grid container
+  const listContainer = document.createElement("div");
+  listContainer.classList.add("grid", "flow-grid", "game-list");
+
+  // make grid items for each game in the list
+  games.forEach(gameObj => {
+    // set up outer elements
+    const [anchorWrap, imgDiv, gameDiv] = 
+    [
+      document.createElement("a"),
+      document.createElement("div"),
+      document.createElement("div")
+    ];
+    anchorWrap.classList.add("anchor-wrap");
+    anchorWrap.setAttribute("href", "#");
+    gameDiv.classList.add("game-div");
+    imgDiv.classList.add("blur", "game-img");
+
+    // set image as background
+    if (gameObj.thumb !== "") {
+      imgDiv.style.backgroundImage = `url(${gameObj.thumb})`;
+    }
+
+    // add game title and price elements
+    const [gameTitle, gamePrice] = 
+    [
+      document.createElement("h2"),
+      document.createElement("div")
+    ];
+    gameTitle.classList.add("game-list-title");
+    gameTitle.textContent = gameObj.external;
+    gamePrice.classList.add("game-list-price");
+    gamePrice.textContent = "Cheapest: $" + gameObj.cheapest;
+
+    gameDiv.appendChild(gameTitle);
+    gameDiv.appendChild(gamePrice);
+
+    // place elements within each other and
+    // place the game within the grid
+    anchorWrap.appendChild(imgDiv);
+    anchorWrap.appendChild(gameDiv);
+    listContainer.appendChild(anchorWrap);
+  })
+  body.appendChild(listContainer);
 }
