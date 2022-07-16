@@ -1,7 +1,9 @@
 const body = document.querySelector("body");
-let gameList = [];
-let filteredListData = [];
+const dealsContainer = document.querySelector('#deals-container');
+const gameDetails = document.querySelector('#game-details');
+const dealsList = document.querySelector('#deals-list');
 
+let storeListData = [];
 
 async function getGameList() {
   try {
@@ -38,9 +40,35 @@ async function getGameInfo(id) {
     }; 
 
     // making request and saving the response in response object
-    const response = await fetch(
+    const gameInfoResp = await fetch(
       `https://www.cheapshark.com/api/1.0/games?id=${id}`,
       gameInfoOptions
+    );
+
+    if (gameInfoResp.ok === -1) {
+      throw new Error(`HTTP error: ${gameInfoResp.status}`);
+    }
+
+    // Extracting data from response object as JSON
+    const gameInfo = gameInfoResp.json();
+    return gameInfo;
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+async function getStoresInfo() {
+  try {
+    // setting options for the request
+    const storesInfoOptions = {
+      method: 'GET',
+      redirect: 'follow'
+    }; 
+
+    // making request and saving the response in response object
+    const response = await fetch(
+      `https://www.cheapshark.com/api/1.0/stores`,
+      storesInfoOptions
     );
 
     if (!response.ok) {
@@ -48,15 +76,24 @@ async function getGameInfo(id) {
     }
 
     // Extracting data from response object as JSON
-    const gameData = await response.json();
-    return gameData;
+    const storesData = await response.json();
+    return storesData;
   } catch (err) {
     console.error(err);
   }
 }
 
 document.addEventListener('DOMContentLoaded', e => {
-  getGameList() // let's do this and the filtering on page load
+  // in
+  let gameList = [];
+
+  getStoresInfo()
+    .then(storesData => {
+      storeListData = storesData;
+      console.log(`This is storeListData: ${storeListData}`);
+    })
+
+  getGameList()
     .then(listData => {
       gameList = listData;
       console.log("This is gameList: " + gameList);
@@ -98,11 +135,47 @@ function paintGameList(games) {
     anchorWrap.addEventListener('click', e => {
       getGameInfo(gameObj.gameID)
         .then(gameData => {
-          console.log("This is gameData " + gameData);
-          const testDiv = document.createElement('div');
-          testDiv.textContent = JSON.stringify(gameData);
-          testDiv.style.color = "white";
-          body.appendChild(testDiv);
+          console.log(gameData);
+          // Game info (left side)
+          const titleHeader = document.querySelector("#game-title");
+          const coverImage = document.querySelector("#game-img");
+          const allTimeCheapest = document.querySelector("#game-cheapest");
+
+          titleHeader.textContent = gameData.info.title;
+          coverImage.setAttribute("src", gameData.info.thumb);
+          coverImage.setAttribute("alt", `Cover image for ${gameData.info.title}`);
+          allTimeCheapest.textContent = `All time best deal: $${gameData.cheapestPriceEver.price}`;
+          
+          // Deals info (right side)
+          const dealsList = document.querySelector("#deals-list");
+          gameData.deals.forEach(deal => {
+            const dealDiv = document.createElement("div");
+            dealDiv.classList.add("deal");
+            const dealPrice = document.createElement("div");
+            dealPrice.classList.add("deal-price");
+            const retailPrice = document.createElement("span");
+            retailPrice.classList.add("retail-price");
+            const savings = document.createElement("div");
+            savings.classList.add("deal-savings");
+            const storeImg = document.createElement("img");
+            storeImg.classList.add("deal-store-img");
+            const storeName = document.createElement("h3");
+            storeName.classList.add("store-name");
+
+            dealPrice.textContent = deal.price;
+            retailPrice.textContent = deal.retailPrice;
+            savings.textContent = "%" + Math.round(Number(deal.savings)).toString();
+            storeName.textContent = storeListData[parseInt(deal.storeID) - 1].storeName;
+
+            dealDiv.appendChild(storeName);
+            dealDiv.appendChild(storeImg);
+            // use the span to cross out the old price
+            dealPrice.appendChild(retailPrice);
+            dealDiv.appendChild(dealPrice);
+            dealDiv.appendChild(savings);
+            console.log(dealDiv);
+            dealsList.appendChild(dealDiv);
+          })
         })
     }); 
 
