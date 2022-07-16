@@ -136,7 +136,9 @@ function paintGameList(games) {
       getGameInfo(gameObj.gameID)
         .then(gameData => {
           console.log(gameData);
+
           // Game info (left side)
+
           const titleHeader = document.querySelector("#game-title");
           const coverImage = document.querySelector("#game-img");
           const allTimeCheapest = document.querySelector("#game-cheapest");
@@ -147,7 +149,14 @@ function paintGameList(games) {
           allTimeCheapest.textContent = `All time best deal: $${gameData.cheapestPriceEver.price}`;
           
           // Deals info (right side)
-          const dealsList = document.querySelector("#deals-list");
+        
+          // remove any deals from the previous selection
+          if (dealsList.querySelector(".deal") !== null) {
+            const previousDeals = dealsList.querySelectorAll(".deal");
+            Array.from(previousDeals).forEach(deal => deal.remove());
+          }
+          
+          // add deals from the new selection
           gameData.deals.forEach(deal => {
             const dealDiv = document.createElement("div");
             dealDiv.classList.add("deal");
