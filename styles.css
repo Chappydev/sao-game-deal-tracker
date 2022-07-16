@@ -10,6 +10,10 @@
 
 body {
   background-color: black;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 a {
@@ -17,9 +21,20 @@ a {
   text-decoration: none;
 }
 
+#header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 2em 0;
+}
+#header h1 {
+  margin-bottom: 0.5em;
+}
+
 .game-list {
   padding: 1em;
   gap: 1em;
+  width: 90%;
 }
 
 .anchor-wrap {
@@ -27,6 +42,7 @@ a {
   position: relative;
   display: block;
   overflow: hidden;
+  color: black;
 }
 .anchor-wrap .game-img {
   position: absolute;
@@ -60,10 +76,63 @@ a {
 #deals-container {
   color: white;
   width: 85%;
-  background-color: rgb(26, 26, 26);
+  background-color: rgb(37, 37, 37);
+  padding: 2em;
+  border-radius: 10px;
+}
+
+#game-title {
+  text-align: center;
+}
+
+#cover-img {
+  width: 80%;
+}
+
+#random-quote {
+  white-space: pre-wrap;
+  text-align: center;
+}
+
+.deal {
+  display: flex;
+  justify-content: space-between;
+  border: 1px solid rgb(92, 92, 92);
+  padding: 0.8em;
+}
+.deal:not(:nth-of-type(1)) {
+  border-top: none;
+}
+
+.store-wrap {
+  display: flex;
+  align-items: center;
+}
+
+.deal-store-img {
+  width: auto;
+  height: 18px;
+}
+
+.retail-price {
+  color: rgb(150, 150, 150);
+  text-decoration: line-through;
+}
+
+.deal-link {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgb(92, 92, 92);
+  border-radius: 10px;
+  padding: 0.4em;
 }
 
 /* utility classes */
+.no-display {
+  display: none;
+}
+
 .grid {
   display: grid;
 }
@@ -74,6 +143,7 @@ a {
 }
 .grid.two-columns {
   grid-template-columns: 1fr 1fr;
+  gap: 2em;
 }
 
 .blur {
@@ -91,6 +161,12 @@ a {
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
+}
+.flex.left {
+  gap: 1em;
+}
+.flex.right {
+  align-items: stretch;
 }
 
 /*# sourceMappingURL=styles.css.map */

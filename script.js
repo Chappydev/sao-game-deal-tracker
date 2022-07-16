@@ -5,6 +5,17 @@ const dealsList = document.querySelector('#deals-list');
 
 let storeListData = [];
 
+const quotes = [
+  "They may not look it, but every single character in SAO is Japanese - yes, even that black guy",
+  "SAO is essential for a healthy digestive system in older age",
+  "It's his ADOPTIVE sister, guys. Relax.",
+  "While many believe Gun Gale Online stole from Star Wars, it's actually the other way around.",
+  "Okay, they are technically related, but they're only cousins, so...",
+  "Your opinion only matters if you watched the show in the original Japanese with 100% comprehension. スイッチ!!",
+  "Wanna be cool like Kirito in real life? Try wearing his in-game outfits to school!",
+  "The reason the creator of Aincrad shut the game down half-way through is that he had a crush on Kirito"
+];
+
 async function getGameList() {
   try {
     // setting options for the request
@@ -140,13 +151,15 @@ function paintGameList(games) {
           // Game info (left side)
 
           const titleHeader = document.querySelector("#game-title");
-          const coverImage = document.querySelector("#game-img");
+          const coverImage = document.querySelector("#cover-img");
           const allTimeCheapest = document.querySelector("#game-cheapest");
+          const randomQuote = document.querySelector("#random-quote");
 
           titleHeader.textContent = gameData.info.title;
           coverImage.setAttribute("src", gameData.info.thumb);
           coverImage.setAttribute("alt", `Cover image for ${gameData.info.title}`);
           allTimeCheapest.textContent = `All time best deal: $${gameData.cheapestPriceEver.price}`;
+          randomQuote.textContent = `Fun Fact:\n${quotes[Math.floor(Math.random() * quotes.length)]}`
           
           // Deals info (right side)
         
@@ -155,7 +168,7 @@ function paintGameList(games) {
             const previousDeals = dealsList.querySelectorAll(".deal");
             Array.from(previousDeals).forEach(deal => deal.remove());
           }
-          
+
           // add deals from the new selection
           gameData.deals.forEach(deal => {
             const dealDiv = document.createElement("div");
@@ -170,21 +183,38 @@ function paintGameList(games) {
             storeImg.classList.add("deal-store-img");
             const storeName = document.createElement("h3");
             storeName.classList.add("store-name");
+            const redirectLink = document.createElement("a");
+            redirectLink.classList.add("deal-link");
 
-            dealPrice.textContent = deal.price;
+            redirectLink.setAttribute("href", `https://www.cheapshark.com/redirect?dealID=${deal.dealID}`);
+            redirectLink.setAttribute("target", "_blank");
+            redirectLink.textContent = "Deal Link";
+
+            const priceText = document.createTextNode(" " + deal.price);
+            dealPrice.appendChild(priceText);
             retailPrice.textContent = deal.retailPrice;
-            savings.textContent = "%" + Math.round(Number(deal.savings)).toString();
+            savings.textContent = "Savings: -" + Math.round(Number(deal.savings)).toString() + "%";
             storeName.textContent = storeListData[parseInt(deal.storeID) - 1].storeName;
+            storeImg.setAttribute("src", `https://www.cheapshark.com/${storeListData[parseInt(deal.storeID) - 1].images.icon}`);
 
-            dealDiv.appendChild(storeName);
-            dealDiv.appendChild(storeImg);
-            // use the span to cross out the old price
-            dealPrice.appendChild(retailPrice);
-            dealDiv.appendChild(dealPrice);
-            dealDiv.appendChild(savings);
+            const storeWrapper = document.createElement("div");
+            storeWrapper.classList.add("store-wrap")
+            storeWrapper.appendChild(storeImg);
+            storeWrapper.appendChild(storeName);
+            dealDiv.appendChild(storeWrapper);
+            const priceWrapper = document.createElement("div")
+            priceWrapper.classList.add("price-wrap");
+            dealPrice.insertBefore(retailPrice, priceText);
+            priceWrapper.appendChild(dealPrice);
+            priceWrapper.appendChild(savings);
+            dealDiv.appendChild(priceWrapper);
+            dealDiv.appendChild(redirectLink);
             console.log(dealDiv);
             dealsList.appendChild(dealDiv);
           })
+          if (dealsContainer.classList.contains("no-display")) {
+            dealsContainer.classList.replace("no-display", "grid");
+          };
         })
     }); 
 
